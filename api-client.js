@@ -50,13 +50,12 @@ const ApiClient = {
   },
 
   async ensureLoggedIn(redirect = true) {
-    const cached = this.currentUser();
-    if (cached) return cached;
     try {
       const me = await this.request('me');
       this.saveSession(me);
       return me;
     } catch (err) {
+      this.clearSession();
       if (redirect) window.location.href = 'login.html';
       return null;
     }

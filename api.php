@@ -64,7 +64,12 @@ function fetch_user(int $id): ?array {
   $pdo = db();
   $st = $pdo->prepare('SELECT id, first_name, last_name, email, phone, birthdate, gender, education_level, role, created_at FROM users WHERE id=?');
   $st->execute([$id]);
-  return $st->fetch() ?: null;
+  $u = $st->fetch();
+  if (!$u) {
+    unset($_SESSION['user_id']);
+    return null;
+  }
+  return $u;
 }
 
 function validate_required(array $data, array $fields): void {
@@ -208,8 +213,8 @@ try {
       $gat = (float)$input['gat_score'];
       $tahsili = (float)$input['tahsili_score'];
       $subjects = is_array($input['subject_scores'] ?? null) ? $input['subject_scores'] : [];
-      $certPath = save_certificate_image($u['id'], $input['certificate_base64']);
-      $major = ai_recommend_major($gpa, $gat, $tahsili, $subjects, $certPath);
+      save_certificate_image($u['id'], $input['certificate_base64']);
+      $major = ai_recommend_major($gpa, $gat, $tahsili, $subjects, null);
       $pdo->prepare('UPDATE users SET ai_recommendation=? WHERE id=?')->execute([$major, (int)$u['id']]);
       json_response($major);
 

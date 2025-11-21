@@ -146,10 +146,8 @@ registerForm.addEventListener('submit', async function(e) {
 
         // Ask AI for recommendation
         getAiRecommendation({
-            gpa: null,
             gat_score: gatScore,
             tahsili_score: tahsiliScore,
-            subject_scores: [],
             certificate_base64: certificateBase64
         });
 
