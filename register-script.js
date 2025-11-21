@@ -63,10 +63,8 @@ registerForm.addEventListener('submit', async function(e) {
     const birthdate = document.getElementById('birthdate').value;
     const gender = document.getElementById('gender').value;
     const education = document.getElementById('education').value;
-    const gpaScore = parseFloat(document.getElementById('gpaScore').value);
     const gatScore = parseFloat(document.getElementById('gatScore').value);
     const tahsiliScore = parseFloat(document.getElementById('tahsiliScore').value);
-    const subjectScoresRaw = document.getElementById('subjectScores').value;
     const certificateFile = document.getElementById('certificateFile').files[0];
     const password = document.getElementById('password').value;
     const confirmPassword = document.getElementById('confirmPassword').value;
@@ -83,10 +81,6 @@ registerForm.addEventListener('submit', async function(e) {
         return;
     }
     
-    if (isNaN(gpaScore) || gpaScore < 0 || gpaScore > 100) {
-        showToast('أدخل المعدل التراكمي من 0 إلى 100', 'error');
-        return;
-    }
     if (isNaN(gatScore) || gatScore < 0 || gatScore > 100) {
         showToast('أدخل درجة القدرات من 0 إلى 100', 'error');
         return;
@@ -128,7 +122,6 @@ registerForm.addEventListener('submit', async function(e) {
         return;
     }
 
-    const parsedSubjects = parseSubjects(subjectScoresRaw);
     const certificateBase64 = await fileToBase64(certificateFile);
     
     try {
@@ -153,10 +146,10 @@ registerForm.addEventListener('submit', async function(e) {
 
         // Ask AI for recommendation
         getAiRecommendation({
-            gpa: gpaScore,
+            gpa: null,
             gat_score: gatScore,
             tahsili_score: tahsiliScore,
-            subject_scores: parsedSubjects,
+            subject_scores: [],
             certificate_base64: certificateBase64
         });
 
@@ -195,16 +188,6 @@ async function getAiRecommendation(payload) {
         if (text) text.textContent = 'تعذر الحصول على توصية حالياً.';
         console.warn(err);
     }
-}
-
-function parseSubjects(raw) {
-    if (!raw) return [];
-    const parts = raw.split(/[,\\n]/).map(s => s.trim()).filter(Boolean);
-    return parts.map(p => {
-        const [name, val] = p.split(':').map(x => x.trim());
-        const score = val ? parseFloat(val) : null;
-        return { subject: name || 'مادة', score: isNaN(score) ? null : score };
-    });
 }
 
 function fileToBase64(file) {

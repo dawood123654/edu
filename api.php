@@ -203,8 +203,8 @@ try {
 
     case 'ai_suggest_major':
       $u = require_auth();
-      validate_required($input, ['gpa', 'gat_score', 'tahsili_score', 'certificate_base64']);
-      $gpa = (float)$input['gpa'];
+      validate_required($input, ['gat_score', 'tahsili_score', 'certificate_base64']);
+      $gpa = isset($input['gpa']) ? (float)$input['gpa'] : 0.0; // GPA assumed extracted from certificate later
       $gat = (float)$input['gat_score'];
       $tahsili = (float)$input['tahsili_score'];
       $subjects = is_array($input['subject_scores'] ?? null) ? $input['subject_scores'] : [];
@@ -241,7 +241,7 @@ function ai_recommend_major(float $gpa, float $gat, float $tahsili, array $subje
     $subjectText .= $s['subject'] . ':' . ($s['score'] ?? 'N/A') . ', ';
   }
   $prompt = "أنت مستشار قبول جامعي سعودي. لديك درجات طالب وشهادة ثانوي ممسوحة (اختياري). قدم تخصصاً واحداً فقط باللغة الإنجليزية بكلمة أو كلمتين (مثل General Doctor, Mechanical Engineer, Computer Science) بدون أي شرح أو JSON. إذا كان الطالب مناسباً للطب أجب بكلمة General Doctor.\n".
-            "البيانات:\n- المعدل التراكمي: {$gpa}\n- قدرات: {$gat}\n- تحصيلي: {$tahsili}\n- درجات المواد: {$subjectText}\n".
+            "البيانات:\n- المعدل التراكمي من الشهادة (إن وجد): {$gpa}\n- قدرات: {$gat}\n- تحصيلي: {$tahsili}\n- درجات المواد من الشهادة: {$subjectText}\n".
             "$guidelines\n".
             "أجب بكلمة تخصص واحدة فقط مثل Doctor أو Pharmacy أو Computer-Science بدون أي نص آخر.";
 
