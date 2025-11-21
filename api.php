@@ -201,9 +201,125 @@ try {
       foreach ($rows as &$r) { $r['answers'] = $r['answers_json'] ? json_decode($r['answers_json'], true) : []; unset($r['answers_json']); }
       json_response($rows);
 
+    case 'ai_suggest_major':
+      $u = require_auth();
+      validate_required($input, ['gpa', 'gat_score', 'tahsili_score', 'certificate_base64']);
+      $gpa = (float)$input['gpa'];
+      $gat = (float)$input['gat_score'];
+      $tahsili = (float)$input['tahsili_score'];
+      $subjects = is_array($input['subject_scores'] ?? null) ? $input['subject_scores'] : [];
+      $certPath = save_certificate_image($u['id'], $input['certificate_base64']);
+      $major = ai_recommend_major($gpa, $gat, $tahsili, $subjects, $certPath);
+      $pdo->prepare('UPDATE users SET ai_recommendation=? WHERE id=?')->execute([$major, (int)$u['id']]);
+      json_response($major);
+
     default:
       json_error('Route not found', 404);
   }
 } catch (Throwable $e) {
   json_error('Server error', 500, $e->getMessage());
+}
+
+// --- AI helper functions ---
+function save_certificate_image(int $userId, string $base64): ?string {
+  if (!$base64) return null;
+  $data = base64_decode($base64);
+  if ($data === false) return null;
+  $dir = __DIR__ . '/uploads';
+  if (!is_dir($dir)) mkdir($dir, 0775, true);
+  $file = $dir . '/cert_' . $userId . '_' . time() . '.png';
+  file_put_contents($file, $data);
+  return $file;
+}
+
+function ai_recommend_major(float $gpa, float $gat, float $tahsili, array $subjects, ?string $certPath): string {
+  $apiKey = getenv('OPENROUTER_API_KEY');
+  $guidelines = "حدود القبول التقريبية بالسعودية: طب (GPA>=95,GAT>=90,TAHSILI>=90)، أسنان (93/88/88)، صيدلة (92/85/85)، هندسة (85/80/80)، حاسب (85/80/75)، علوم (80/75/0)، إدارة أعمال (75/70/0)، إنسانيات (60/0/0). أمثلة للتخصصات السعودية المتوقعة: General Doctor, Dentistry, Pharmacy, Mechanical Engineer, Electrical Engineer, Civil Engineer, Computer Science, Cybersecurity, Data Science, Nursing, Business Administration, Finance, Accounting, English Literature, Law, Sharia, Design, Interior Design.";
+  $subjectText = '';
+  foreach ($subjects as $s) {
+    if (!isset($s['subject'])) continue;
+    $subjectText .= $s['subject'] . ':' . ($s['score'] ?? 'N/A') . ', ';
+  }
+  $prompt = "أنت مستشار قبول جامعي سعودي. لديك درجات طالب وشهادة ثانوي ممسوحة (اختياري). قدم تخصصاً واحداً فقط باللغة الإنجليزية بكلمة أو كلمتين (مثل General Doctor, Mechanical Engineer, Computer Science) بدون أي شرح أو JSON. إذا كان الطالب مناسباً للطب أجب بكلمة General Doctor.\n".
+            "البيانات:\n- المعدل التراكمي: {$gpa}\n- قدرات: {$gat}\n- تحصيلي: {$tahsili}\n- درجات المواد: {$subjectText}\n".
+            "$guidelines\n".
+            "أجب بكلمة تخصص واحدة فقط مثل Doctor أو Pharmacy أو Computer-Science بدون أي نص آخر.";
+
+  if (!$apiKey) {
+    // Fallback heuristic if key missing
+    return heuristic_reco($gpa, $gat, $tahsili);
+  }
+
+  $body = [
+    'model' => 'nvidia/nemotron-nano-12b-v2-vl:free',
+    'messages' => [
+      ['role'=>'system','content'=>'انت خبير قبول جامعي سعودي دقيق وصارم بالنسب.'],
+      ['role'=>'user','content'=>$prompt]
+    ]
+  ];
+
+  $ch = curl_init('https://openrouter.ai/api/v1/chat/completions');
+  curl_setopt_array($ch, [
+    CURLOPT_POST => true,
+    CURLOPT_RETURNTRANSFER => true,
+    CURLOPT_HTTPHEADER => [
+      'Content-Type: application/json',
+      'Authorization: Bearer ' . $apiKey,
+      'HTTP-Referer: http://localhost',
+      'X-Title: EduPath AI'
+    ],
+    CURLOPT_POSTFIELDS => json_encode($body)
+  ]);
+  $resp = curl_exec($ch);
+  if ($resp === false) {
+    return heuristic_reco($gpa, $gat, $tahsili);
+  }
+  $decoded = json_decode($resp, true);
+  $text = $decoded['choices'][0]['message']['content'] ?? '';
+  $major = sanitize_major_output($text);
+  if (!$major) {
+    return heuristic_reco($gpa, $gat, $tahsili);
+  }
+  return $major;
+}
+
+function heuristic_reco(float $gpa, float $gat, float $tahsili): string {
+  $options = [
+    ['major'=>'General Doctor', 'gpa'=>95, 'gat'=>90, 'tahsili'=>90],
+    ['major'=>'Dentistry', 'gpa'=>93, 'gat'=>88, 'tahsili'=>88],
+    ['major'=>'Pharmacy', 'gpa'=>92, 'gat'=>85, 'tahsili'=>85],
+    ['major'=>'Mechanical Engineer', 'gpa'=>85, 'gat'=>80, 'tahsili'=>80],
+    ['major'=>'Electrical Engineer', 'gpa'=>85, 'gat'=>80, 'tahsili'=>80],
+    ['major'=>'Computer Science', 'gpa'=>85, 'gat'=>80, 'tahsili'=>75],
+    ['major'=>'Cybersecurity', 'gpa'=>85, 'gat'=>80, 'tahsili'=>75],
+    ['major'=>'Data Science', 'gpa'=>85, 'gat'=>80, 'tahsili'=>75],
+    ['major'=>'Nursing', 'gpa'=>80, 'gat'=>70, 'tahsili'=>0],
+    ['major'=>'Business Administration', 'gpa'=>75, 'gat'=>70, 'tahsili'=>0],
+    ['major'=>'Finance', 'gpa'=>75, 'gat'=>70, 'tahsili'=>0],
+    ['major'=>'Accounting', 'gpa'=>75, 'gat'=>70, 'tahsili'=>0],
+    ['major'=>'Law', 'gpa'=>70, 'gat'=>0, 'tahsili'=>0],
+    ['major'=>'English Literature', 'gpa'=>70, 'gat'=>0, 'tahsili'=>0],
+    ['major'=>'Sharia', 'gpa'=>65, 'gat'=>0, 'tahsili'=>0],
+    ['major'=>'Humanities', 'gpa'=>60, 'gat'=>0, 'tahsili'=>0],
+  ];
+  foreach ($options as $opt) {
+    if ($gpa >= $opt['gpa'] && $gat >= $opt['gat'] && $tahsili >= $opt['tahsili']) {
+      return $opt['major'];
+    }
+  }
+  return 'Humanities';
+}
+
+function sanitize_major_output(string $text): string {
+  $clean = trim($text);
+  $clean = preg_replace('/[\\r\\n]+/', ' ', $clean);
+  $clean = preg_replace('/[^\\p{L}\\p{Nd}\\- ]+/u', '', $clean);
+  $clean = trim($clean);
+  if (!$clean) return '';
+  $words = explode(' ', $clean);
+  $clean = implode(' ', array_slice($words, 0, 3));
+  if (stripos($clean, 'doctor') !== false || stripos($clean, 'medicin') !== false) {
+    return 'General Doctor';
+  }
+  return $clean;
 }

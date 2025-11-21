@@ -3,7 +3,7 @@
 --   mysql -u root -p < database-init.sql
 
 SET NAMES utf8mb4;
-CREATE DATABASE IF NOT EXISTS edupath CHARACTER SET utf8mb4;
+CREATE DATABASE IF NOT EXISTS edupath CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci;
 USE edupath;
 
 SET FOREIGN_KEY_CHECKS=0;
@@ -23,9 +23,10 @@ CREATE TABLE users (
   gender ENUM('male','female','other') NULL,
   education_level VARCHAR(100) NULL,
   role ENUM('student','admin') NOT NULL DEFAULT 'student',
+  ai_recommendation VARCHAR(255) NULL,
   password_hash VARCHAR(255) NOT NULL,
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 -- Admin user: admin@example.com / Admin@123
 INSERT INTO users (first_name, last_name, email, role, password_hash)
@@ -37,7 +38,7 @@ CREATE TABLE quizzes (
   description TEXT NULL,
   is_active TINYINT(1) NOT NULL DEFAULT 1,
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 INSERT INTO quizzes (id, title, description, is_active)
 VALUES (1, 'استبيان المسار الأكاديمي', 'أسئلة بسيطة لتجميع اهتمامات الطالب', 1);
@@ -52,7 +53,7 @@ CREATE TABLE quiz_questions (
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   INDEX idx_qq_quiz (quiz_id),
   CONSTRAINT fk_qq_quiz FOREIGN KEY (quiz_id) REFERENCES quizzes(id) ON DELETE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 INSERT INTO quiz_questions (quiz_id, question_text, question_type, options_json, is_required) VALUES
 (1,'ما نوع الثانوية التي تخرجت منها؟','choice',JSON_ARRAY('حكومية','أهلية','عالمية'),1),
@@ -78,4 +79,4 @@ CREATE TABLE quiz_attempts (
   INDEX idx_attempt_quiz (quiz_id),
   CONSTRAINT fk_attempt_quiz FOREIGN KEY (quiz_id) REFERENCES quizzes(id) ON DELETE CASCADE,
   CONSTRAINT fk_attempt_user FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;

@@ -63,6 +63,11 @@ registerForm.addEventListener('submit', async function(e) {
     const birthdate = document.getElementById('birthdate').value;
     const gender = document.getElementById('gender').value;
     const education = document.getElementById('education').value;
+    const gpaScore = parseFloat(document.getElementById('gpaScore').value);
+    const gatScore = parseFloat(document.getElementById('gatScore').value);
+    const tahsiliScore = parseFloat(document.getElementById('tahsiliScore').value);
+    const subjectScoresRaw = document.getElementById('subjectScores').value;
+    const certificateFile = document.getElementById('certificateFile').files[0];
     const password = document.getElementById('password').value;
     const confirmPassword = document.getElementById('confirmPassword').value;
     const termsAccepted = document.getElementById('terms').checked;
@@ -78,6 +83,19 @@ registerForm.addEventListener('submit', async function(e) {
         return;
     }
     
+    if (isNaN(gpaScore) || gpaScore < 0 || gpaScore > 100) {
+        showToast('أدخل المعدل التراكمي من 0 إلى 100', 'error');
+        return;
+    }
+    if (isNaN(gatScore) || gatScore < 0 || gatScore > 100) {
+        showToast('أدخل درجة القدرات من 0 إلى 100', 'error');
+        return;
+    }
+    if (isNaN(tahsiliScore) || tahsiliScore < 0 || tahsiliScore > 100) {
+        showToast('أدخل درجة التحصيلي من 0 إلى 100', 'error');
+        return;
+    }
+
     if (phone.length !== 10 || !phone.startsWith('05')) {
         showToast('رقم الجوال يجب أن يبدأ بـ 05 ويتكون من 10 أرقام', 'error');
         return;
@@ -105,6 +123,13 @@ registerForm.addEventListener('submit', async function(e) {
         showToast('يجب أن يكون عمرك 13 سنة على الأقل', 'error');
         return;
     }
+    if (!certificateFile) {
+        showToast('الرجاء رفع شهادة الثانوية', 'error');
+        return;
+    }
+
+    const parsedSubjects = parseSubjects(subjectScoresRaw);
+    const certificateBase64 = await fileToBase64(certificateFile);
     
     try {
         const data = await ApiClient.request('register', {
@@ -125,7 +150,17 @@ registerForm.addEventListener('submit', async function(e) {
         }
         localStorage.setItem('isRegistered', 'true');
         showToast('تم إنشاء الحساب بنجاح! 🎉', 'success');
-        setTimeout(() => window.location.href = 'dashboard.html', 1200);
+
+        // Ask AI for recommendation
+        getAiRecommendation({
+            gpa: gpaScore,
+            gat_score: gatScore,
+            tahsili_score: tahsiliScore,
+            subject_scores: parsedSubjects,
+            certificate_base64: certificateBase64
+        });
+
+        setTimeout(() => window.location.href = 'dashboard.html', 1500);
     } catch (err) {
         const msg = err?.message || 'تعذر إنشاء الحساب';
         showToast(msg, 'error');
@@ -141,5 +176,48 @@ window.addEventListener('load', async function() {
         }
     }
 });
+
+async function getAiRecommendation(payload) {
+    const box = document.getElementById('aiResultBox');
+    const text = document.getElementById('aiResultText');
+    if (box) box.style.display = 'block';
+    if (text) text.textContent = 'جاري تحليل بياناتك وتوليد توصية...';
+    try {
+        const res = await ApiClient.request('ai_suggest_major', {
+            method: 'POST',
+            body: payload
+        });
+        if (text) {
+            const major = typeof res === 'string' ? res : (res.recommendation || res.major || '');
+            text.textContent = major || 'لم يتم العثور على توصية.';
+        }
+    } catch (err) {
+        if (text) text.textContent = 'تعذر الحصول على توصية حالياً.';
+        console.warn(err);
+    }
+}
+
+function parseSubjects(raw) {
+    if (!raw) return [];
+    const parts = raw.split(/[,\\n]/).map(s => s.trim()).filter(Boolean);
+    return parts.map(p => {
+        const [name, val] = p.split(':').map(x => x.trim());
+        const score = val ? parseFloat(val) : null;
+        return { subject: name || 'مادة', score: isNaN(score) ? null : score };
+    });
+}
+
+function fileToBase64(file) {
+    return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = () => {
+            const result = reader.result;
+            const base64 = result.split(',')[1];
+            resolve(base64);
+        };
+        reader.onerror = reject;
+        reader.readAsDataURL(file);
+    });
+}
 
 console.log('EduPath KSA - Register Page Loaded Successfully ✅');
