@@ -1,0 +1,353 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EduPath KSA - استبيان التوجيه الأكاديمي</title>
+    <link rel="stylesheet" href="quiz-style.css">
+</head>
+<body>
+    <!-- Header -->
+    <header>
+        <div class="header-content">
+            <div class="logo">
+                📚 EduPath KSA
+            </div>
+            <div class="header-right">
+                <button class="exit-btn" id="exitBtn">الخروج</button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Container -->
+    <main class="quiz-main">
+        <div class="quiz-container">
+            <!-- Form Header -->
+            <div class="quiz-header">
+                <h2>استبيان التوجيه الأكاديمي</h2>
+                <p class="quiz-description">ساعدنا في التعرف عليك لنقدم لك أفضل التوصيات</p>
+                
+                <!-- Progress Bar -->
+                <div class="progress-container">
+                    <div class="progress-bar">
+                        <div class="progress-fill" id="progressBar"></div>
+                    </div>
+                    <div class="progress-text">
+                        <span id="stepCounter">الخطوة 1 من 4</span>
+                        <span id="progressPercentage">0%</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Step 1: High School Information -->
+            <div class="form-step active" id="step1">
+                <div class="step-header">
+                    <div class="step-icon">🎓</div>
+                    <h3>المعلومات الثانوية</h3>
+                    <p>أخبرنا عن دراستك في المرحلة الثانوية</p>
+                </div>
+                
+                <div class="form-group">
+                    <label for="highSchoolType">نوع الثانوية:</label>
+                    <select id="highSchoolType" class="form-control" required>
+                        <option value="">اختر نوع الثانوية</option>
+                        <option value="public">حكومية</option>
+                        <option value="private">أهلية</option>
+                        <option value="international">عالمية</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="track">المسار الدراسي:</label>
+                    <select id="track" class="form-control" required>
+                        <option value="">اختر المسار</option>
+                        <option value="science">علمي</option>
+                        <option value="humanities">أدبي</option>
+                        <option value="sharia">شرعي</option>
+                        <option value="admin">إداري</option>
+                        <option value="computer">حاسب آلي</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="gpa">المعدل التراكمي (من 100):</label>
+                    <input type="number" id="gpa" class="form-control" min="0" max="100" step="0.01" placeholder="مثال: 95.5" required>
+                    <small class="form-hint">أدخل معدلك التراكمي في الثانوية</small>
+                </div>
+
+                <div class="form-group">
+                    <label for="graduationYear">سنة التخرج:</label>
+                    <select id="graduationYear" class="form-control" required>
+                        <option value="">اختر السنة</option>
+                        <option value="2024">2024</option>
+                        <option value="2023">2023</option>
+                        <option value="2022">2022</option>
+                        <option value="2021">2021</option>
+                        <option value="2020">2020</option>
+                        <option value="older">أقدم من ذلك</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- Step 2: Standardized Tests -->
+            <div class="form-step" id="step2">
+                <div class="step-header">
+                    <div class="step-icon">📝</div>
+                    <h3>اختبارات القدرات والتحصيلي</h3>
+                    <p>معلومات عن الاختبارات المعيارية</p>
+                </div>
+
+                <div class="form-group">
+                    <label>هل أديت اختبار القدرات العامة؟</label>
+                    <div class="radio-group">
+                        <label class="radio-option">
+                            <input type="radio" name="hasQudurat" value="yes" required>
+                            <span>نعم</span>
+                        </label>
+                        <label class="radio-option">
+                            <input type="radio" name="hasQudurat" value="no">
+                            <span>لا</span>
+                        </label>
+                    </div>
+                </div>
+
+                <div class="form-group conditional" id="quduratScoreGroup" style="display: none;">
+                    <label for="quduratScore">درجة القدرات (من 100):</label>
+                    <input type="number" id="quduratScore" class="form-control" min="0" max="100" step="1" placeholder="مثال: 85">
+                    <small class="form-hint">أدخل درجتك في اختبار القدرات العامة</small>
+                </div>
+
+                <div class="form-group">
+                    <label>هل أديت الاختبار التحصيلي؟</label>
+                    <div class="radio-group">
+                        <label class="radio-option">
+                            <input type="radio" name="hasTahsili" value="yes" required>
+                            <span>نعم</span>
+                        </label>
+                        <label class="radio-option">
+                            <input type="radio" name="hasTahsili" value="no">
+                            <span>لا</span>
+                        </label>
+                    </div>
+                </div>
+
+                <div class="form-group conditional" id="tahsiliScoreGroup" style="display: none;">
+                    <label for="tahsiliScore">درجة التحصيلي (من 100):</label>
+                    <input type="number" id="tahsiliScore" class="form-control" min="0" max="100" step="1" placeholder="مثال: 88">
+                    <small class="form-hint">أدخل درجتك في الاختبار التحصيلي</small>
+                </div>
+
+                <div class="form-group">
+                    <label>هل لديك اختبارات أخرى؟ (IELTS, TOEFL, SAT, إلخ)</label>
+                    <div class="radio-group">
+                        <label class="radio-option">
+                            <input type="radio" name="hasOtherTests" value="yes">
+                            <span>نعم</span>
+                        </label>
+                        <label class="radio-option">
+                            <input type="radio" name="hasOtherTests" value="no">
+                            <span>لا</span>
+                        </label>
+                    </div>
+                </div>
+
+                <div class="form-group conditional" id="otherTestsGroup" style="display: none;">
+                    <label for="otherTests">تفاصيل الاختبارات الأخرى:</label>
+                    <textarea id="otherTests" class="form-control" rows="3" placeholder="مثال: IELTS - 7.0, SAT - 1400"></textarea>
+                </div>
+            </div>
+
+            <!-- Step 3: Interests and Preferences -->
+            <div class="form-step" id="step3">
+                <div class="step-header">
+                    <div class="step-icon">💡</div>
+                    <h3>الاهتمامات والتفضيلات</h3>
+                    <p>ما هي المجالات التي تهتم بها؟</p>
+                </div>
+
+                <div class="form-group">
+                    <label>ما هي المجالات التي تفضل دراستها؟ (يمكنك اختيار أكثر من مجال)</label>
+                    <div class="checkbox-group">
+                        <label class="checkbox-option">
+                            <input type="checkbox" name="interests" value="medicine">
+                            <span>⚕️ الطب والعلوم الصحية</span>
+                        </label>
+                        <label class="checkbox-option">
+                            <input type="checkbox" name="interests" value="engineering">
+                            <span>🔧 الهندسة</span>
+                        </label>
+                        <label class="checkbox-option">
+                            <input type="checkbox" name="interests" value="computer">
+                            <span>💻 علوم الحاسب والتقنية</span>
+                        </label>
+                        <label class="checkbox-option">
+                            <input type="checkbox" name="interests" value="science">
+                            <span>🔬 العلوم الطبيعية</span>
+                        </label>
+                        <label class="checkbox-option">
+                            <input type="checkbox" name="interests" value="business">
+                            <span>💼 إدارة الأعمال والاقتصاد</span>
+                        </label>
+                        <label class="checkbox-option">
+                            <input type="checkbox" name="interests" value="humanities">
+                            <span>📚 العلوم الإنسانية والاجتماعية</span>
+                        </label>
+                        <label class="checkbox-option">
+                            <input type="checkbox" name="interests" value="law">
+                            <span>⚖️ القانون والشريعة</span>
+                        </label>
+                        <label class="checkbox-option">
+                            <input type="checkbox" name="interests" value="arts">
+                            <span>🎨 الفنون والتصميم</span>
+                        </label>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="careerGoal">ما هو هدفك المهني المستقبلي؟</label>
+                    <textarea id="careerGoal" class="form-control" rows="3" placeholder="مثال: أطمح أن أصبح مهندس برمجيات أو طبيب..."></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label for="studyPreference">تفضيل الدراسة:</label>
+                    <select id="studyPreference" class="form-control">
+                        <option value="">اختر التفضيل</option>
+                        <option value="theoretical">نظري (محاضرات وقراءة)</option>
+                        <option value="practical">عملي (مختبرات وتطبيق)</option>
+                        <option value="mixed">مزيج من النظري والعملي</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- Step 4: Additional Information -->
+            <div class="form-step" id="step4">
+                <div class="step-header">
+                    <div class="step-icon">🎯</div>
+                    <h3>معلومات إضافية</h3>
+                    <p>معلومات تساعدنا في تقديم توصيات أفضل</p>
+                </div>
+
+                <div class="form-group">
+                    <label for="cityPreference">المدينة المفضلة للدراسة:</label>
+                    <select id="cityPreference" class="form-control">
+                        <option value="">اختر المدينة</option>
+                        <option value="riyadh">الرياض</option>
+                        <option value="jeddah">جدة</option>
+                        <option value="dammam">الدمام</option>
+                        <option value="makkah">مكة المكرمة</option>
+                        <option value="madinah">المدينة المنورة</option>
+                        <option value="khobar">الخبر</option>
+                        <option value="abha">أبها</option>
+                        <option value="tabuk">تبوك</option>
+                        <option value="any">أي مدينة</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="universityType">نوع الجامعة المفضل:</label>
+                    <select id="universityType" class="form-control">
+                        <option value="">اختر النوع</option>
+                        <option value="government">حكومية</option>
+                        <option value="private">خاصة</option>
+                        <option value="both">كلاهما</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label>هل تفضل الدراسة باللغة الإنجليزية؟</label>
+                    <div class="radio-group">
+                        <label class="radio-option">
+                            <input type="radio" name="englishStudy" value="yes">
+                            <span>نعم</span>
+                        </label>
+                        <label class="radio-option">
+                            <input type="radio" name="englishStudy" value="no">
+                            <span>لا</span>
+                        </label>
+                        <label class="radio-option">
+                            <input type="radio" name="englishStudy" value="both">
+                            <span>لا يهم</span>
+                        </label>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="additionalInfo">معلومات أو ملاحظات إضافية:</label>
+                    <textarea id="additionalInfo" class="form-control" rows="4" placeholder="أي معلومات أخرى تود مشاركتها معنا..."></textarea>
+                </div>
+            </div>
+
+            <!-- Navigation Buttons -->
+            <div class="navigation-buttons">
+                <button class="btn btn-secondary" id="prevBtn" disabled>
+                    ← السابق
+                </button>
+                <button class="btn btn-primary" id="nextBtn">
+                    التالي →
+                </button>
+            </div>
+
+            <!-- Step Indicators -->
+            <div class="step-indicators">
+                <div class="step-dot active" data-step="1">
+                    <span>1</span>
+                    <small>المعلومات الثانوية</small>
+                </div>
+                <div class="step-dot" data-step="2">
+                    <span>2</span>
+                    <small>الاختبارات</small>
+                </div>
+                <div class="step-dot" data-step="3">
+                    <span>3</span>
+                    <small>الاهتمامات</small>
+                </div>
+                <div class="step-dot" data-step="4">
+                    <span>4</span>
+                    <small>معلومات إضافية</small>
+                </div>
+            </div>
+        </div>
+
+        <!-- Sidebar Info -->
+        <div class="quiz-sidebar">
+            <div class="sidebar-card">
+                <div class="sidebar-icon">📊</div>
+                <h3>عن الاستبيان</h3>
+                <p>سيساعدنا هذا الاستبيان في:</p>
+                <ul class="info-list">
+                    <li>تحديد التخصصات المناسبة لك</li>
+                    <li>اقتراح الجامعات التي تستوفي شروطها</li>
+                    <li>تقديم مسار أكاديمي مخصص</li>
+                    <li>مساعدتك في اتخاذ القرار الصحيح</li>
+                </ul>
+            </div>
+
+            <div class="sidebar-card tips-card">
+                <div class="sidebar-icon">💡</div>
+                <h3>نصائح</h3>
+                <ul class="tips-list">
+                    <li>كن صادقاً في إجاباتك</li>
+                    <li>خذ وقتك في التفكير</li>
+                    <li>لا توجد إجابات صحيحة أو خاطئة</li>
+                    <li>يمكنك العودة لتعديل إجاباتك</li>
+                </ul>
+            </div>
+        </div>
+    </main>
+
+    <!-- Confirmation Modal -->
+    <div class="modal" id="exitModal">
+        <div class="modal-content">
+            <h3>⚠️ تأكيد الخروج</h3>
+            <p>هل أنت متأكد من الخروج؟ سيتم حفظ إجاباتك.</p>
+            <div class="modal-buttons">
+                <button class="btn btn-secondary" id="cancelExit">إلغاء</button>
+                <button class="btn btn-danger" id="confirmExit">خروج</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="api-client.js"></script>
+    <script src="quiz-script.js"></script>
+</body>
+</html>

@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EduPath KSA - نتائج الاختبار</title>
+    <link rel="stylesheet" href="results-style.css">
+</head>
+<body>
+    <!-- Header -->
+    <header>
+        <div class="header-content">
+            <div class="logo">
+                📚 EduPath KSA
+            </div>
+            <div class="header-right">
+                <button class="btn btn-outline" onclick="location.href='dashboard.html'">لوحة التحكم</button>
+                <button class="btn btn-primary" onclick="window.print()">طباعة النتيجة</button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Results -->
+    <main class="results-main">
+        <div class="container">
+            <!-- Success Banner -->
+            <div class="success-banner">
+                <div class="confetti">🎉</div>
+                <h1>تهانينا! أكملت تحديد مسارك بنجاح</h1>
+                <p>إليك تقرير مفصل </p>
+            </div>
+
+            <!-- Results Overview -->
+            <div class="results-grid">
+                <!-- Score Card -->
+                <div class="result-card main-score">
+                    <div class="score-circle">
+                        <svg class="score-ring" viewBox="0 0 200 200">
+                            <circle class="score-ring-bg" cx="100" cy="100" r="85" />
+                            <circle class="score-ring-fill" cx="100" cy="100" r="85" id="scoreRing" />
+                        </svg>
+                        <div class="score-content">
+                            <h2 id="finalScore">0%</h2>
+                            <p>النتيجة النهائية</p>
+                        </div>
+                    </div>
+                    <div class="performance-badge" id="performanceBadge">
+                        <span class="badge-icon">🏆</span>
+                        <span class="badge-text">ممتاز</span>
+                    </div>
+                </div>
+
+                <!-- Stats Cards -->
+                <div class="stats-cards">
+                    <div class="stat-item">
+                        <div class="stat-icon correct">✓</div>
+                        <div class="stat-info">
+                            <h3 id="correctAnswers">0</h3>
+                            <p>إجابات صحيحة</p>
+                        </div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-icon wrong">✗</div>
+                        <div class="stat-info">
+                            <h3 id="wrongAnswers">0</h3>
+                            <p>إجابات خاطئة</p>
+                        </div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-icon time">⏱️</div>
+                        <div class="stat-info">
+                            <h3 id="timeTaken">0:00</h3>
+                            <p>الوقت المستغرق</p>
+                        </div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-icon percentage">📊</div>
+                        <div class="stat-info">
+                            <h3 id="accuracyRate">0%</h3>
+                            <p>نسبة الدقة</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Performance Analysis -->
+            <div class="analysis-section">
+                <h2 class="section-title">
+                    <span class="title-icon">📈</span>
+                    تحليل الأداء
+                </h2>
+                <div class="analysis-card">
+                    <div class="analysis-image">
+                        <img src="https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=400&h=300&fit=crop" alt="Performance Analysis">
+                    </div>
+                    <div class="analysis-content">
+                        <h3 id="performanceTitle">أداء ممتاز!</h3>
+                        <p id="performanceDescription">
+                            لقد حققت نتيجة رائعة في هذا الاختبار. تظهر إجاباتك فهماً عميقاً للمفاهيم الأساسية وقدرة تحليلية متميزة.
+                        </p>
+                        <div class="strength-areas">
+                            <h4>نقاط القوة:</h4>
+                            <ul id="strengthList">
+                                <li>التفكير المنطقي والتحليلي</li>
+                                <li>حل المسائل الرياضية</li>
+                                <li>الفهم اللغوي</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Recommendations -->
+            <div class="recommendations-section">
+                <h2 class="section-title">
+                    <span class="title-icon">🎯</span>
+                    التوصيات المخصصة لك
+                </h2>
+                <div class="recommendations-grid">
+                    <div class="recommendation-card">
+                        <div class="recommendation-header">
+                            <div class="rec-icon">🔬</div>
+                            <span class="match-badge">مطابقة 92%</span>
+                        </div>
+                        <h3>المسار العلمي</h3>
+                        <p>بناءً على نتائجك الممتازة في القسم التحليلي، نوصي بشدة بالمسار العلمي</p>
+                        <div class="rec-majors">
+                            <span class="major-tag">الهندسة</span>
+                            <span class="major-tag">الطب</span>
+                            <span class="major-tag">علوم الحاسب</span>
+                        </div>
+                    </div>
+
+                    <div class="recommendation-card">
+                        <div class="recommendation-header">
+                            <div class="rec-icon">💻</div>
+                            <span class="match-badge">مطابقة 88%</span>
+                        </div>
+                        <h3>تخصصات التقنية</h3>
+                        <p>مهاراتك في حل المشكلات تجعلك مناسباً للتخصصات التقنية والبرمجية</p>
+                        <div class="rec-majors">
+                            <span class="major-tag">علوم البيانات</span>
+                            <span class="major-tag">الذكاء الاصطناعي</span>
+                            <span class="major-tag">أمن المعلومات</span>
+                        </div>
+                    </div>
+
+                    <div class="recommendation-card">
+                        <div class="recommendation-header">
+                            <div class="rec-icon">⚕️</div>
+                            <span class="match-badge">مطابقة 85%</span>
+                        </div>
+                        <h3>المجالات الطبية</h3>
+                        <p>قدراتك العلمية والتحليلية تؤهلك للتميز في التخصصات الطبية</p>
+                        <div class="rec-majors">
+                            <span class="major-tag">الطب البشري</span>
+                            <span class="major-tag">طب الأسنان</span>
+                            <span class="major-tag">الصيدلة</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Detailed Results -->
+            <div class="detailed-results">
+                <h2 class="section-title">
+                    <span class="title-icon">📋</span>
+                    تفاصيل الإجابات
+                </h2>
+                <div class="questions-review" id="questionsReview">
+                    <!-- Questions will be inserted here by JavaScript -->
+                </div>
+            </div>
+
+            <!-- Next Steps -->
+            <div class="next-steps">
+                <h2 class="section-title">
+                    <span class="title-icon">🚀</span>
+                    الخطوات التالية
+                </h2>
+                <div class="steps-grid">
+                    <div class="step-card">
+                        <div class="step-number">1</div>
+                        <h3>حفظ النتيجة</h3>
+                        <p>احفظ نسخة من نتيجتك للرجوع إليها لاحقاً</p>
+                        <button class="btn-step" onclick="window.print()">طباعة التقرير</button>
+                    </div>
+                    <div class="step-card">
+                        <div class="step-number">2</div>
+                        <h3>اختبارات إضافية</h3>
+                        <p>أكمل الاختبارات الأخرى للحصول على تقييم شامل</p>
+                        <button class="btn-step" onclick="location.href='dashboard.html'">عرض الاختبارات</button>
+                    </div>
+                    <div class="step-card">
+                        <div class="step-number">3</div>
+                        <h3>استشارة مهنية</h3>
+                        <p>احصل على استشارة مخصصة من خبرائنا</p>
+                        <button class="btn-step" onclick="alert('قريباً')">طلب استشارة</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Action Buttons -->
+            <div class="action-buttons">
+                <button class="btn btn-secondary" onclick="location.href='quiz.html'">
+                    🔄 إعادة الاختبار
+                </button>
+                <button class="btn btn-primary" onclick="location.href='dashboard.html'">
+                    📊 العودة للوحة التحكم
+                </button>
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer>
+        <p>&copy; 2024 EduPath KSA. جميع الحقوق محفوظة</p>
+    </footer>
+
+    <script src="api-client.js"></script>
+    <script src="results-script.js"></script>
+</body>
+</html>

@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EduPath KSA - إنشاء حساب جديد</title>
+    <link rel="stylesheet" href="register-style.css">
+</head>
+<body>
+    <div class="register-container">
+        <!-- Left Side - Form -->
+        <div class="register-form">
+            <a href="index.html" class="back-btn">
+                ← العودة للرئيسية
+            </a>
+
+            <h2>إنشاء حساب جديد</h2>
+            <p class="subtitle">انضم إلينا اليوم وابدأ رحلتك التعليمية</p>
+
+            <form id="registerForm">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="firstName">الاسم الأول</label>
+                        <div class="input-wrapper">
+                            <input type="text" id="firstName" placeholder="أحمد" required>
+                            <span class="input-icon">👤</span>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="lastName">اسم العائلة</label>
+                        <div class="input-wrapper">
+                            <input type="text" id="lastName" placeholder="محمد" required>
+                            <span class="input-icon">👤</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="email">البريد الإلكتروني</label>
+                    <div class="input-wrapper">
+                        <input type="email" id="email" placeholder="example@email.com" required>
+                        <span class="input-icon">📧</span>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="phone">رقم الجوال</label>
+                        <div class="input-wrapper">
+                            <input type="tel" id="phone" placeholder="05xxxxxxxx" pattern="[0-9]{10}" required>
+                            <span class="input-icon">📱</span>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="birthdate">تاريخ الميلاد</label>
+                        <div class="input-wrapper">
+                            <input type="date" id="birthdate" required>
+                            <span class="input-icon">📅</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="gender">الجنس</label>
+                    <div class="input-wrapper">
+                        <select id="gender" required>
+                            <option value="">اختر...</option>
+                            <option value="male">ذكر</option>
+                            <option value="female">أنثى</option>
+                        </select>
+                        <span class="input-icon">⚥</span>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="education">المرحلة الدراسية</label>
+                    <div class="input-wrapper">
+                        <select id="education" required>
+                            <option value="">اختر المرحلة...</option>
+                            <option value="middle">المرحلة المتوسطة</option>
+                            <option value="high">المرحلة الثانوية</option>
+                            <option value="university">جامعي</option>
+                            <option value="graduate">خريج</option>
+                        </select>
+                        <span class="input-icon">🎓</span>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="password">كلمة المرور</label>
+                    <div class="input-wrapper">
+                        <input type="password" id="password" placeholder="••••••••" minlength="8" required>
+                        <span class="input-icon">🔒</span>
+                        <span class="toggle-password" id="togglePassword">👁️</span>
+                    </div>
+                    <div class="password-strength">
+                        <div class="strength-bar" id="strengthBar"></div>
+                    </div>
+                    <small class="password-hint">يجب أن تحتوي على 8 أحرف على الأقل</small>
+                </div>
+
+                <div class="form-group">
+                    <label for="confirmPassword">تأكيد كلمة المرور</label>
+                    <div class="input-wrapper">
+                        <input type="password" id="confirmPassword" placeholder="••••••••" required>
+                        <span class="input-icon">🔒</span>
+                        <span class="toggle-password" id="toggleConfirmPassword">👁️</span>
+                    </div>
+                </div>
+
+                <div class="terms">
+                    <input type="checkbox" id="terms" required>
+                    <label for="terms">
+                        أوافق على <a href="#">الشروط والأحكام</a> و <a href="#">سياسة الخصوصية</a>
+                    </label>
+                </div>
+
+                <button type="submit" class="btn-register">
+                    إنشاء حساب
+                </button>
+            </form>
+
+            <div class="login-link">
+                لديك حساب بالفعل؟ 
+                <a href="login.html">تسجيل الدخول</a>
+            </div>
+        </div>
+
+        <!-- Right Side - Image & Info -->
+        <div class="register-image">
+            <div class="register-image-content">
+                <div class="image-icon">🎯</div>
+                <h2>ابدأ رحلتك معنا</h2>
+                <p>انضم لآلاف الطلاب الذين اكتشفوا مساراتهم التعليمية المثالية</p>
+
+                <div class="benefits-list">
+                    <div class="benefit-item">
+                        <div class="benefit-icon">✨</div>
+                        <div>
+                            <strong>اختبارات ذكية</strong><br>
+                            <span>تقييم دقيق لقدراتك</span>
+                        </div>
+                    </div>
+                    <div class="benefit-item">
+                        <div class="benefit-icon">📊</div>
+                        <div>
+                            <strong>تقارير مفصلة</strong><br>
+                            <span>تحليل شامل لنتائجك</span>
+                        </div>
+                    </div>
+                    <div class="benefit-item">
+                        <div class="benefit-icon">🎓</div>
+                        <div>
+                            <strong>توجيه مهني</strong><br>
+                            <span>توصيات مخصصة لك</span>
+                        </div>
+                    </div>
+                    <div class="benefit-item">
+                        <div class="benefit-icon">🔒</div>
+                        <div>
+                            <strong>أمان وخصوصية</strong><br>
+                            <span>بياناتك محمية بالكامل</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="api-client.js"></script>
+    <script src="register-script.js"></script>
+</body>
+</html>

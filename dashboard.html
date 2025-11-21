@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EduPath KSA - لوحة التحكم</title>
+    <link rel="stylesheet" href="dashboard-style.css">
+</head>
+<body>
+    <!-- Header -->
+    <header>
+        <div class="header-content">
+            <div class="logo">
+                📚 EduPath KSA
+            </div>
+            <div class="header-right">
+                <button class="lang-btn" id="langBtn">EN</button>
+                <div class="user-menu">
+                    <img src="https://ui-avatars.com/api/?name=User&background=667eea&color=fff&size=40" alt="User" class="user-avatar">
+                    <span class="user-name" id="userName">مستخدم</span>
+                    <button class="logout-btn" id="logoutBtn">تسجيل الخروج</button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="dashboard">
+        <div class="container">
+            <!-- Welcome Card -->
+            <div class="welcome-card">
+                <div class="welcome-content">
+                    <h2>مرحباً، <span id="welcomeName">طالب</span>! 👋</h2>
+                    <p>مستعد لاكتشاف مسارك التعليمي المثالي؟</p>
+                </div>
+                <div class="welcome-image">
+                    <img src="https://images.unsplash.com/photo-1516321497487-e288fb19713f?w=300&h=200&fit=crop" alt="Welcome">
+                </div>
+            </div>
+
+            <!-- Stats Grid -->
+            <div class="stats-section">
+                <h3 class="section-title">إحصائياتك</h3>
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-icon">📝</div>
+                        <div class="stat-info">
+                            <h3 id="completedTests">3</h3>
+                            <p>اختبارات مكتملة</p>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon">📊</div>
+                        <div class="stat-info">
+                            <h3 id="avgScore">85%</h3>
+                            <p>متوسط الدرجات</p>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon">🎯</div>
+                        <div class="stat-info">
+                            <h3 id="recommendations">5</h3>
+                            <p>توصيات</p>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon">⏱️</div>
+                        <div class="stat-info">
+                            <h3 id="totalTime">45</h3>
+                            <p>دقيقة استثمار</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Available Tests -->
+            <div class="tests-section">
+                <div class="section-header">
+                    <h3 class="section-title">اكتشف مسارك الجامعي</h3>
+                  
+                </div>
+                <div class="courses-grid">
+                    <div class="course-card">
+                        <div class="course-image">
+                            <img src="https://images.unsplash.com/photo-1488190211105-8b0e65b80b4e?w=1200&h=800&fit=crop&q=85" alt="Books and Learning">
+                            
+                        </div>
+                        <div class="course-body">
+                            <h3>المعلومات الأكاديمية / الاهتمامات والميول</h3>
+                            <p>أدخل معلوماتك الدراسية من الثانوية: المسار، المعدل، ونتائج الاختبارات</p>
+                           <p> أخبرنا عن اهتماماتك وما تحب دراسته: علوم، هندسة، طب، أو إنسانيات</p>
+                            <div class="course-meta">
+                                <span>⏱️ 5 دقيقة</span>
+                                
+                            </div>
+                            <button class="btn-start" onclick="location.href='quiz.html'">ابدأ </button>
+                        </div>
+                    </div>
+
+                  
+                </div>
+            </div>
+
+            <!-- Recent Activity -->
+            <div class="activity-section">
+                <h3 class="section-title">النشاط الأخير</h3>
+                <div class="activity-list">
+                    <div class="activity-item">
+                        <div class="activity-icon">✅</div>
+                        <div class="activity-content">
+                            <h4>أكملت اختبار القدرات</h4>
+                            <p>حصلت على درجة 85%</p>
+                        </div>
+                        <div class="activity-date">منذ يومين</div>
+                    </div>
+                    <div class="activity-item">
+                        <div class="activity-icon">📊</div>
+                        <div class="activity-content">
+                            <h4>تم إنشاء تقرير تفصيلي</h4>
+                            <p>تقرير نتائج اختبار القدرات</p>
+                        </div>
+                        <div class="activity-date">منذ 3 أيام</div>
+                    </div>
+                    <div class="activity-item">
+                        <div class="activity-icon">🎯</div>
+                        <div class="activity-content">
+                            <h4>توصيات جديدة متاحة</h4>
+                            <p>5 توصيات مخصصة لمسارك التعليمي</p>
+                        </div>
+                        <div class="activity-date">منذ أسبوع</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Recommendations -->
+            <div class="recommendations-section">
+                <h3 class="section-title">توصيات لك</h3>
+                <div class="recommendations-grid">
+                    <div class="recommendation-card">
+                        <div class="recommendation-icon">🔬</div>
+                        <h4>المسار العلمي</h4>
+                        <p>بناءً على نتائجك، المسار العلمي يناسب قدراتك</p>
+                        <span class="match-percentage">مطابقة 92%</span>
+                    </div>
+                    <div class="recommendation-card">
+                        <div class="recommendation-icon">💻</div>
+                        <h4>تخصص علوم الحاسب</h4>
+                        <p>مهاراتك التحليلية تجعلك مناسباً للحاسب الآلي</p>
+                        <span class="match-percentage">مطابقة 88%</span>
+                    </div>
+                    <div class="recommendation-card">
+                        <div class="recommendation-icon">⚕️</div>
+                        <h4>المجال الطبي</h4>
+                        <p>قدراتك العلمية تؤهلك للتخصصات الطبية</p>
+                        <span class="match-percentage">مطابقة 85%</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Admin Panel -->
+            <div class="admin-panel" id="adminPanel" style="display:none;">
+                <h3 class="section-title">لوحة إنشاء الاختبارات (للمسؤول)</h3>
+                <div class="admin-grid">
+                    <div class="admin-card">
+                        <h4>إنشاء اختبار جديد</h4>
+                        <label for="quizTitleInput">عنوان الاختبار</label>
+                        <input type="text" id="quizTitleInput" placeholder="مثال: استبيان الميول الأكاديمي">
+                        <label for="quizDescriptionInput">وصف مختصر</label>
+                        <textarea id="quizDescriptionInput" placeholder="أدخل وصفاً للاختبار"></textarea>
+                        <button class="btn-primary" id="createQuizBtn">إنشاء اختبار</button>
+                    </div>
+                    <div class="admin-card">
+                        <h4>إضافة سؤال</h4>
+                        <label for="quizSelector">اختر الاختبار</label>
+                        <select id="quizSelector"></select>
+                        <label for="questionTextInput">نص السؤال</label>
+                        <textarea id="questionTextInput" placeholder="اكتب نص السؤال هنا"></textarea>
+                        <label for="questionTypeSelect">نوع السؤال</label>
+                        <select id="questionTypeSelect">
+                            <option value="choice">اختياري</option>
+                            <option value="text">نصي</option>
+                            <option value="number">رقمي</option>
+                            <option value="boolean">نعم / لا</option>
+                        </select>
+                        <label for="questionOptionsInput">الاختيارات (افصل بينها بفاصلة)</label>
+                        <input type="text" id="questionOptionsInput" placeholder="مثال: نعم,لا أو الهندسة,الطب,الحاسب">
+                        <label style="display:flex;align-items:center;gap:8px;">
+                            <input type="checkbox" id="questionRequired" checked>
+                            السؤال إجباري
+                        </label>
+                        <button class="btn-primary" id="addQuestionBtn">حفظ السؤال</button>
+                    </div>
+                    <div class="admin-card">
+                        <h4>الاختبارات المتاحة</h4>
+                        <div id="quizList"></div>
+                        <p style="color:#666;font-size:13px;margin-top:10px;">يتم تحديث القائمة تلقائياً بعد إنشاء اختبار أو إضافة سؤال.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer>
+        <p>&copy; 2024 EduPath KSA. جميع الحقوق محفوظة</p>
+    </footer>
+
+    <script src="api-client.js"></script>
+    <script src="dashboard-script.js"></script>
+</body>
+</html>
