@@ -4,11 +4,30 @@ const totalSteps = 4;
 let formData = {};
 let quizStartTime = Date.now();
 const quizId = 1;
+let currentUserId = null;
+
+function userKey(base) {
+    return currentUserId ? `${base}_${currentUserId}` : base;
+}
+
+function resetIfDifferentUser(user) {
+    const lastId = localStorage.getItem('lastQuizUserId');
+    const newId = user?.id ? String(user.id) : null;
+    if (newId && lastId && lastId !== newId) {
+        ['academicFormData', 'academicResults', 'certificateBase64', 'certificateFileName', 'aiRecommendation'].forEach(k => {
+            localStorage.removeItem(`${k}_${lastId}`);
+            localStorage.removeItem(k);
+        });
+    }
+    if (newId) localStorage.setItem('lastQuizUserId', newId);
+}
 
 // Initialize Form
 window.addEventListener('load', async function() {
     const user = await ApiClient.ensureLoggedIn();
     if (!user) return;
+    currentUserId = user.id || null;
+    resetIfDifferentUser(user);
     quizStartTime = Date.now();
     initializeForm();
     setupEventListeners();
@@ -39,11 +58,13 @@ function setupEventListeners() {
             }
         });
     });
-    
+
     // Auto-save on input change
     document.querySelectorAll('input, select, textarea').forEach(element => {
         element.addEventListener('change', autoSave);
     });
+
+    setupCertificateUpload();
 }
 
 // Setup Conditional Fields
@@ -90,6 +111,72 @@ function setupConditionalFields() {
             }
         });
     });
+
+    // Interest followups
+    const interestCheckboxes = document.querySelectorAll('input[name="interests"]');
+    interestCheckboxes.forEach(cb => {
+        cb.addEventListener('change', toggleFollowups);
+    });
+    toggleFollowups();
+}
+
+// Certificate Upload
+function setupCertificateUpload() {
+    const uploadBox = document.getElementById('certificateUpload');
+    const fileInput = document.getElementById('certificateFile');
+    if (!uploadBox || !fileInput) return;
+
+    const handleDrop = (e) => {
+        e.preventDefault();
+        uploadBox.classList.remove('dragging');
+        if (e.dataTransfer?.files?.length) {
+            handleCertificateFile(e.dataTransfer.files[0]);
+        }
+    };
+
+    uploadBox.addEventListener('click', () => fileInput.click());
+    uploadBox.addEventListener('dragover', (e) => {
+        e.preventDefault();
+        uploadBox.classList.add('dragging');
+    });
+    uploadBox.addEventListener('dragleave', () => uploadBox.classList.remove('dragging'));
+    uploadBox.addEventListener('drop', handleDrop);
+    fileInput.addEventListener('change', (e) => {
+        const file = e.target.files?.[0];
+        if (file) handleCertificateFile(file);
+    });
+}
+
+async function handleCertificateFile(file) {
+    const uploadBox = document.getElementById('certificateUpload');
+    const fileNameEl = document.getElementById('certificateFileName');
+    if (!file || !uploadBox || !fileNameEl) return;
+
+    const maxSize = 3 * 1024 * 1024; // 3 MB
+    if (!file.type.startsWith('image/')) {
+        showToast('الرجاء رفع صورة للشهادة (JPG أو PNG)', 'error');
+        return;
+    }
+    if (file.size > maxSize) {
+        showToast('حجم الملف كبير. الحد الأقصى 3 ميغابايت', 'error');
+        return;
+    }
+
+    const reader = new FileReader();
+    reader.onload = function(evt) {
+        const result = evt.target?.result?.toString() || '';
+        formData.certificateBase64 = result;
+        formData.certificateFileName = file.name;
+        fileNameEl.textContent = file.name;
+        localStorage.setItem(userKey('certificateBase64'), result);
+        localStorage.setItem(userKey('certificateFileName'), file.name);
+        uploadBox.classList.remove('error');
+        autoSave();
+    };
+    reader.onerror = function() {
+        showToast('تعذر قراءة الملف، جرّب ملفاً آخر', 'error');
+    };
+    reader.readAsDataURL(file);
 }
 
 // Validate Current Step
@@ -133,11 +220,19 @@ function validateCurrentStep() {
     
     // Special validation for step 3 (at least one interest must be selected)
     if (currentStep === 3) {
-        const interests = document.querySelectorAll('input[name="interests"]:checked');
-        if (interests.length === 0) {
-            alert('الرجاء اختيار مجال واحد على الأقل من اهتماماتك');
-            isValid = false;
-        }
+    const interests = document.querySelectorAll('input[name="interests"]:checked');
+    if (interests.length === 0) {
+        alert('الرجاء اختيار مجال واحد على الأقل من اهتماماتك');
+        isValid = false;
+    }
+    }
+
+    // Certificate required on step 2
+    if (currentStep === 2 && !formData.certificateBase64) {
+        const uploadBox = document.getElementById('certificateUpload');
+        if (uploadBox) uploadBox.classList.add('error');
+        showToast('الرجاء رفع صورة شهادة الثانوية لإكمال الاستبيان', 'error');
+        isValid = false;
     }
     
     if (!isValid && firstInvalidField) {
@@ -259,7 +354,7 @@ function saveCurrentStepData() {
     });
     
     // Save to localStorage
-    localStorage.setItem('academicFormData', JSON.stringify(formData));
+    localStorage.setItem(userKey('academicFormData'), JSON.stringify(formData));
 }
 
 // Auto Save
@@ -269,7 +364,7 @@ function autoSave() {
 
 // Load Saved Data
 function loadSavedData() {
-    const savedData = localStorage.getItem('academicFormData');
+    const savedData = localStorage.getItem(userKey('academicFormData'));
     if (savedData) {
         formData = JSON.parse(savedData);
         
@@ -307,7 +402,15 @@ function loadSavedData() {
                 });
             }
         });
+
+        // Restore certificate label if exists
+        if (formData.certificateFileName) {
+            const fileNameEl = document.getElementById('certificateFileName');
+            if (fileNameEl) fileNameEl.textContent = formData.certificateFileName;
+        }
     }
+
+    toggleFollowups();
 }
 
 // Submit Form
@@ -333,25 +436,36 @@ async function submitForm() {
     // Match universities and majors
     const recommendations = matchUniversitiesAndMajors(compositeScore, gpa, interests, formData.track);
     
-    // Save results
+    // Save results locally (without heavy certificate content)
     const results = {
-        formData: formData,
+        formData: { ...formData },
         compositeScore: compositeScore.toFixed(2),
         recommendations: recommendations,
         date: new Date().toISOString()
     };
+    delete results.formData.certificateBase64;
     
-    localStorage.setItem('academicResults', JSON.stringify(results));
-    
+    localStorage.setItem(userKey('academicResults'), JSON.stringify(results));
+
+    // Send certificate to AI for reading
+    const aiRecommendation = await sendCertificateToAi({ gpa, quduratScore, tahsiliScore });
+    if (aiRecommendation) {
+        results.aiRecommendation = aiRecommendation;
+        localStorage.setItem('academicResults', JSON.stringify(results));
+    }
+
     try {
         const durationSeconds = Math.round((Date.now() - quizStartTime) / 1000);
+        const answersToSave = { ...formData };
+        delete answersToSave.certificateBase64;
+        delete answersToSave.certificateFileName;
         const saved = await ApiClient.request('save_attempt', {
             method: 'POST',
             body: {
                 quiz_id: quizId,
                 composite_score: parseFloat(results.compositeScore),
                 duration_seconds: durationSeconds,
-                answers: formData
+                answers: answersToSave
             }
         });
         if (saved.attempt_id) {
@@ -364,6 +478,59 @@ async function submitForm() {
     
     // Redirect to results page
     window.location.href = 'results.html';
+}
+
+function normalizeBase64(dataUrl) {
+    if (!dataUrl) return '';
+    const commaIndex = dataUrl.indexOf(',');
+    return commaIndex !== -1 ? dataUrl.slice(commaIndex + 1) : dataUrl;
+}
+
+function toggleFollowups() {
+    const interests = Array.from(document.querySelectorAll('input[name="interests"]:checked')).map(cb => cb.value);
+    const csBlock = document.getElementById('csFollowup');
+    const medBlock = document.getElementById('medFollowup');
+    const engBlock = document.getElementById('engFollowup');
+    const bizBlock = document.getElementById('bizFollowup');
+    const lawBlock = document.getElementById('lawFollowup');
+    const artsBlock = document.getElementById('artsFollowup');
+    if (csBlock) csBlock.style.display = interests.includes('computer') ? 'block' : 'none';
+    if (medBlock) medBlock.style.display = (interests.includes('medicine') || interests.includes('dentistry')) ? 'block' : 'none';
+    if (engBlock) engBlock.style.display = interests.includes('engineering') ? 'block' : 'none';
+    if (bizBlock) bizBlock.style.display = interests.includes('business') ? 'block' : 'none';
+    if (lawBlock) lawBlock.style.display = (interests.includes('law') || interests.includes('humanities') || interests.includes('sharia')) ? 'block' : 'none';
+    if (artsBlock) artsBlock.style.display = interests.includes('arts') ? 'block' : 'none';
+}
+
+async function sendCertificateToAi({ gpa, quduratScore, tahsiliScore }) {
+    if (!formData.certificateBase64) return null;
+    const certificateBase64 = normalizeBase64(formData.certificateBase64);
+    if (!certificateBase64) return null;
+
+    try {
+        showToast('جاري قراءة الشهادة بالذكاء الاصطناعي...', 'info');
+        const aiResult = await ApiClient.request('ai_suggest_major', {
+            method: 'POST',
+            body: {
+                gat_score: quduratScore,
+                tahsili_score: tahsiliScore,
+                gpa: gpa,
+                certificate_base64: certificateBase64,
+                subject_scores: []
+            }
+        });
+        const recommendation = typeof aiResult === 'string'
+            ? aiResult
+            : (aiResult.major || aiResult.recommendation || aiResult.suggestion || null);
+        if (recommendation) {
+            localStorage.setItem(userKey('aiRecommendation'), recommendation);
+        }
+        return recommendation;
+    } catch (err) {
+        console.warn('AI analysis failed', err);
+        showToast('تعذر تحليل الشهادة بالذكاء الاصطناعي حالياً', 'error');
+        return null;
+    }
 }
 
 // Match Universities and Majors
@@ -479,10 +646,11 @@ function matchUniversitiesAndMajors(compositeScore, gpa, interests, track) {
             const meetsScore = compositeScore >= major.minScore;
             const meetsTrack = major.track.includes(track);
             const hasInterest = interests.some(interest => major.interests.includes(interest));
-            
+            const specializationBoost = getSpecializationBoost(major.name, formData);
+
             if (meetsScore && meetsTrack) {
-                const matchPercentage = calculateMatchPercentage(compositeScore, major.minScore, hasInterest);
-                
+                const matchPercentage = calculateMatchPercentage(compositeScore, major.minScore, hasInterest, specializationBoost);
+
                 recommendations.push({
                     university: university.name,
                     city: university.city,
@@ -505,15 +673,82 @@ function matchUniversitiesAndMajors(compositeScore, gpa, interests, track) {
 }
 
 // Calculate Match Percentage
-function calculateMatchPercentage(studentScore, minScore, hasInterest) {
+function calculateMatchPercentage(studentScore, minScore, hasInterest, specializationBoost = 0) {
     // Base match on how much student exceeds minimum
     const scoreMatch = Math.min(100, ((studentScore - minScore) / minScore) * 100 + 70);
     
     // Boost if student has interest
     const interestBoost = hasInterest ? 15 : 0;
     
+    // Add specialization boost from follow-up answers
+    const total = scoreMatch + interestBoost + specializationBoost;
+    
     // Calculate final match (max 100%)
-    return Math.min(100, Math.round(scoreMatch + interestBoost));
+    return Math.min(100, Math.round(total));
+}
+
+function getSpecializationBoost(majorName, formData) {
+    let boost = 0;
+    const name = majorName || '';
+
+    const isComputer = name.includes('حاسب') || name.toLowerCase().includes('computer');
+    const isMedicine = name.includes('طب') || name.includes('أسنان') || name.toLowerCase().includes('dent');
+    const isEngineering = name.includes('هندسة') || name.toLowerCase().includes('engineer');
+    const isBusiness = name.includes('إدارة') || name.includes('اقتصاد') || name.toLowerCase().includes('business');
+    const isLaw = name.includes('قانون') || name.includes('شريعة') || name.toLowerCase().includes('law');
+    const isArts = name.includes('تصميم') || name.includes('فنون') || name.toLowerCase().includes('design');
+
+    if (isComputer) {
+        if (formData.csProblemSolving === 'high') boost += 6;
+        else if (formData.csProblemSolving === 'medium') boost += 3;
+        if (formData.csProjects === 'yes') boost += 4;
+        if (formData.csMathComfort === 'high') boost += 3;
+        else if (formData.csMathComfort === 'medium') boost += 1;
+    }
+
+    if (isMedicine) {
+        if (formData.medPatientComfort === 'high') boost += 5;
+        else if (formData.medPatientComfort === 'medium') boost += 2;
+        if (formData.medBioInterest === 'high') boost += 4;
+        else if (formData.medBioInterest === 'medium') boost += 2;
+        if (formData.medStudyStamina === 'high') boost += 4;
+        else if (formData.medStudyStamina === 'medium') boost += 2;
+    }
+
+    if (isEngineering) {
+        if (formData.engHandsOn === 'high') boost += 5;
+        else if (formData.engHandsOn === 'medium') boost += 2;
+        if (formData.engMathPhysics === 'high') boost += 4;
+        else if (formData.engMathPhysics === 'medium') boost += 2;
+        if (formData.engTeamwork === 'high') boost += 2;
+        else if (formData.engTeamwork === 'medium') boost += 1;
+    }
+
+    if (isBusiness) {
+        if (formData.busLeadership === 'high') boost += 4;
+        else if (formData.busLeadership === 'medium') boost += 2;
+        if (formData.busFinanceInterest === 'high') boost += 4;
+        else if (formData.busFinanceInterest === 'medium') boost += 2;
+        if (formData.busEntrepreneur === 'high') boost += 3;
+        else if (formData.busEntrepreneur === 'medium') boost += 1;
+    }
+
+    if (isLaw) {
+        if (formData.lawReading === 'high') boost += 4;
+        else if (formData.lawReading === 'medium') boost += 2;
+        if (formData.lawDebate === 'high') boost += 3;
+        else if (formData.lawDebate === 'medium') boost += 1;
+        if (formData.lawEthics === 'high') boost += 3;
+        else if (formData.lawEthics === 'medium') boost += 1;
+    }
+
+    if (isArts) {
+        if (formData.artsCreativity === 'high') boost += 5;
+        else if (formData.artsCreativity === 'medium') boost += 3;
+        if (formData.artsPortfolio === 'yes') boost += 3;
+    }
+
+    return boost;
 }
 
 // Modal Functions

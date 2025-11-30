@@ -199,6 +199,52 @@ header {
     font-size: 14px;
 }
 
+.ai-card {
+    background: white;
+    border-radius: 18px;
+    padding: 22px 26px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 14px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+    margin-bottom: 30px;
+    border: 1px solid #eef0ff;
+}
+
+.ai-info {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+}
+
+.ai-icon {
+    width: 54px;
+    height: 54px;
+    border-radius: 14px;
+    background: linear-gradient(135deg, #667eea, #764ba2);
+    color: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 26px;
+}
+
+.ai-label {
+    margin: 0;
+    color: #667eea;
+    font-weight: 700;
+}
+
+.ai-note {
+    margin: 6px 0 0;
+    color: #666;
+}
+
+.ai-card.pending {
+    opacity: 0.8;
+}
+
 .performance-badge {
     text-align: center;
     padding: 15px;
@@ -665,6 +711,19 @@ footer {
 @media (max-width: 768px) {
     .stats-cards {
         grid-template-columns: 1fr;
+    }
+
+    .ai-card {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    #retryAiBtn {
+        width: 100%;
+    }
+
+    .ai-info {
+        width: 100%;
     }
     
     .action-buttons {

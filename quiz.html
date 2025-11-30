@@ -93,8 +93,8 @@
             <div class="form-step" id="step2">
                 <div class="step-header">
                     <div class="step-icon">📝</div>
-                    <h3>اختبارات القدرات والتحصيلي</h3>
-                    <p>معلومات عن الاختبارات المعيارية</p>
+                    <h3>الاختبارات والشهادة</h3>
+                    <p>أدخل درجاتك وارفع شهادة الثانوية ليتم تحليلها</p>
                 </div>
 
                 <div class="form-group">
@@ -155,6 +155,22 @@
                     <label for="otherTests">تفاصيل الاختبارات الأخرى:</label>
                     <textarea id="otherTests" class="form-control" rows="3" placeholder="مثال: IELTS - 7.0, SAT - 1400"></textarea>
                 </div>
+
+                <div class="form-group">
+                    <label>شهادة الثانوية (صورة واضحة)</label>
+                    <div class="upload-box" id="certificateUpload">
+                        <input type="file" id="certificateFile" accept="image/*" hidden>
+                        <div class="upload-content">
+                            <div class="upload-icon">📄</div>
+                            <div>
+                                <strong id="certificateLabel">اسحب الشهادة هنا أو اضغط للاختيار</strong>
+                                <p class="upload-hint">سنرسل الشهادة إلى نموذج الذكاء الاصطناعي لقراءة الدرجات تلقائياً</p>
+                                <p class="upload-note">الحد الأقصى 3 ميغابايت - صيغة صورة (JPG/PNG)</p>
+                                <p class="upload-file-name" id="certificateFileName">لم يتم اختيار ملف</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
 
             <!-- Step 3: Interests and Preferences -->
@@ -181,6 +197,10 @@
                             <span>💻 علوم الحاسب والتقنية</span>
                         </label>
                         <label class="checkbox-option">
+                            <input type="checkbox" name="interests" value="dentistry">
+                            <span>🦷 طب الأسنان</span>
+                        </label>
+                        <label class="checkbox-option">
                             <input type="checkbox" name="interests" value="science">
                             <span>🔬 العلوم الطبيعية</span>
                         </label>
@@ -200,6 +220,164 @@
                             <input type="checkbox" name="interests" value="arts">
                             <span>🎨 الفنون والتصميم</span>
                         </label>
+                    </div>
+                </div>
+
+                <div class="followup-group" id="csFollowup" style="display:none;">
+                    <h4>أسئلة إضافية لعلوم الحاسب</h4>
+                    <div class="form-group">
+                        <label>ما مدى ارتياحك لحل المشكلات المنطقية؟</label>
+                        <div class="radio-group inline">
+                            <label class="radio-option"><input type="radio" name="csProblemSolving" value="high"> عالٍ</label>
+                            <label class="radio-option"><input type="radio" name="csProblemSolving" value="medium"> متوسط</label>
+                            <label class="radio-option"><input type="radio" name="csProblemSolving" value="low"> منخفض</label>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>هل أنجزت مشروعاً أو تدريباً برمجياً سابقاً؟</label>
+                        <div class="radio-group inline">
+                            <label class="radio-option"><input type="radio" name="csProjects" value="yes"> نعم</label>
+                            <label class="radio-option"><input type="radio" name="csProjects" value="no"> لا</label>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>مدى ارتياحك للرياضيات المتقدمة</label>
+                        <div class="radio-group inline">
+                            <label class="radio-option"><input type="radio" name="csMathComfort" value="high"> عالٍ</label>
+                            <label class="radio-option"><input type="radio" name="csMathComfort" value="medium"> متوسط</label>
+                            <label class="radio-option"><input type="radio" name="csMathComfort" value="low"> منخفض</label>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="followup-group" id="medFollowup" style="display:none;">
+                    <h4>أسئلة إضافية للطب/طب الأسنان</h4>
+                    <div class="form-group">
+                        <label>استعدادك للتعامل مع المرضى والإجراءات الطبية</label>
+                        <div class="radio-group inline">
+                            <label class="radio-option"><input type="radio" name="medPatientComfort" value="high"> عالٍ</label>
+                            <label class="radio-option"><input type="radio" name="medPatientComfort" value="medium"> متوسط</label>
+                            <label class="radio-option"><input type="radio" name="medPatientComfort" value="low"> منخفض</label>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>اهتمامك بالعلوم الحيوية والتشريح</label>
+                        <div class="radio-group inline">
+                            <label class="radio-option"><input type="radio" name="medBioInterest" value="high"> عالٍ</label>
+                            <label class="radio-option"><input type="radio" name="medBioInterest" value="medium"> متوسط</label>
+                            <label class="radio-option"><input type="radio" name="medBioInterest" value="low"> منخفض</label>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>قدرتك على الالتزام بساعات دراسة طويلة</label>
+                        <div class="radio-group inline">
+                            <label class="radio-option"><input type="radio" name="medStudyStamina" value="high"> قوية</label>
+                            <label class="radio-option"><input type="radio" name="medStudyStamina" value="medium"> متوسطة</label>
+                            <label class="radio-option"><input type="radio" name="medStudyStamina" value="low"> ضعيفة</label>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="followup-group" id="engFollowup" style="display:none;">
+                    <h4>أسئلة إضافية للهندسة</h4>
+                    <div class="form-group">
+                        <label>مدى حبك للتصميم والبناء العملي</label>
+                        <div class="radio-group inline">
+                            <label class="radio-option"><input type="radio" name="engHandsOn" value="high"> عالٍ</label>
+                            <label class="radio-option"><input type="radio" name="engHandsOn" value="medium"> متوسط</label>
+                            <label class="radio-option"><input type="radio" name="engHandsOn" value="low"> منخفض</label>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>راحتك مع الرياضيات والفيزياء</label>
+                        <div class="radio-group inline">
+                            <label class="radio-option"><input type="radio" name="engMathPhysics" value="high"> عالٍ</label>
+                            <label class="radio-option"><input type="radio" name="engMathPhysics" value="medium"> متوسط</label>
+                            <label class="radio-option"><input type="radio" name="engMathPhysics" value="low"> منخفض</label>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>تفضيلك للعمل ضمن فرق ومشاريع ميدانية</label>
+                        <div class="radio-group inline">
+                            <label class="radio-option"><input type="radio" name="engTeamwork" value="high"> عالٍ</label>
+                            <label class="radio-option"><input type="radio" name="engTeamwork" value="medium"> متوسط</label>
+                            <label class="radio-option"><input type="radio" name="engTeamwork" value="low"> منخفض</label>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="followup-group" id="bizFollowup" style="display:none;">
+                    <h4>أسئلة إضافية لإدارة الأعمال</h4>
+                    <div class="form-group">
+                        <label>ميولك للقيادة واتخاذ القرار</label>
+                        <div class="radio-group inline">
+                            <label class="radio-option"><input type="radio" name="busLeadership" value="high"> عالٍ</label>
+                            <label class="radio-option"><input type="radio" name="busLeadership" value="medium"> متوسط</label>
+                            <label class="radio-option"><input type="radio" name="busLeadership" value="low"> منخفض</label>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>اهتمامك بالتحليل المالي والبيانات</label>
+                        <div class="radio-group inline">
+                            <label class="radio-option"><input type="radio" name="busFinanceInterest" value="high"> عالٍ</label>
+                            <label class="radio-option"><input type="radio" name="busFinanceInterest" value="medium"> متوسط</label>
+                            <label class="radio-option"><input type="radio" name="busFinanceInterest" value="low"> منخفض</label>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>حماسك لريادة الأعمال وابتكار المشاريع</label>
+                        <div class="radio-group inline">
+                            <label class="radio-option"><input type="radio" name="busEntrepreneur" value="high"> عالٍ</label>
+                            <label class="radio-option"><input type="radio" name="busEntrepreneur" value="medium"> متوسط</label>
+                            <label class="radio-option"><input type="radio" name="busEntrepreneur" value="low"> منخفض</label>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="followup-group" id="lawFollowup" style="display:none;">
+                    <h4>أسئلة إضافية للقانون/الشريعة</h4>
+                    <div class="form-group">
+                        <label>اهتمامك بالقراءة المتعمقة للنصوص</label>
+                        <div class="radio-group inline">
+                            <label class="radio-option"><input type="radio" name="lawReading" value="high"> عالٍ</label>
+                            <label class="radio-option"><input type="radio" name="lawReading" value="medium"> متوسط</label>
+                            <label class="radio-option"><input type="radio" name="lawReading" value="low"> منخفض</label>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>مهاراتك في الجدل والنقاش المنطقي</label>
+                        <div class="radio-group inline">
+                            <label class="radio-option"><input type="radio" name="lawDebate" value="high"> عالٍ</label>
+                            <label class="radio-option"><input type="radio" name="lawDebate" value="medium"> متوسط</label>
+                            <label class="radio-option"><input type="radio" name="lawDebate" value="low"> منخفض</label>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>التزامك بالجانب الأخلاقي والمهني</label>
+                        <div class="radio-group inline">
+                            <label class="radio-option"><input type="radio" name="lawEthics" value="high"> عالٍ</label>
+                            <label class="radio-option"><input type="radio" name="lawEthics" value="medium"> متوسط</label>
+                            <label class="radio-option"><input type="radio" name="lawEthics" value="low"> منخفض</label>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="followup-group" id="artsFollowup" style="display:none;">
+                    <h4>أسئلة إضافية للفنون/التصميم</h4>
+                    <div class="form-group">
+                        <label>مستوى إبداعك وإنتاج أعمال فنية أو تصميمية</label>
+                        <div class="radio-group inline">
+                            <label class="radio-option"><input type="radio" name="artsCreativity" value="high"> عالٍ</label>
+                            <label class="radio-option"><input type="radio" name="artsCreativity" value="medium"> متوسط</label>
+                            <label class="radio-option"><input type="radio" name="artsCreativity" value="low"> منخفض</label>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>هل لديك سابقة أعمال (Portfolio)؟</label>
+                        <div class="radio-group inline">
+                            <label class="radio-option"><input type="radio" name="artsPortfolio" value="yes"> نعم</label>
+                            <label class="radio-option"><input type="radio" name="artsPortfolio" value="no"> لا</label>
+                        </div>
                     </div>
                 </div>
 

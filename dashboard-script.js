@@ -7,6 +7,7 @@ async function initDashboard() {
     if (!user) return;
     await loadUserProfile();
     await loadUserStats();
+    await loadMajorQuizzes();
     animateStats();
     setupCardAnimations();
     bindLogout();
@@ -54,6 +55,42 @@ async function loadUserStats() {
         }
     } catch (err) {
         console.warn('Unable to load stats', err);
+    }
+}
+
+async function loadMajorQuizzes() {
+    const container = document.getElementById('majorQuizList');
+    if (!container) return;
+    container.innerHTML = '<p style="color:#666;">جارٍ تحميل الاختبارات...</p>';
+    try {
+        let quizzes = await ApiClient.request('list_quizzes');
+        quizzes = quizzes.filter(q => q.id !== 1 && q.is_active);
+        if (!quizzes.length) {
+            container.innerHTML = '<p style="color:#666;">لا توجد اختبارات تخصص متاحة حالياً.</p>';
+            return;
+        }
+        container.innerHTML = '';
+        quizzes.forEach(q => {
+            const row = document.createElement('div');
+            row.style.display = 'flex';
+            row.style.justifyContent = 'space-between';
+            row.style.alignItems = 'center';
+            row.style.padding = '10px 12px';
+            row.style.border = '1px solid #e6e6f3';
+            row.style.borderRadius = '10px';
+            row.style.background = '#f8f9ff';
+            row.innerHTML = `
+                <div>
+                    <strong>${q.title}</strong>
+                    <p style="margin:4px 0 0 0;color:#555;font-size:13px;">${q.description || ''}</p>
+                </div>
+                <button class="btn-start" style="margin:0;" onclick="location.href='major-quiz.html?quiz_id=${q.id}'">بدء</button>
+            `;
+            container.appendChild(row);
+        });
+    } catch (err) {
+        console.warn(err);
+        container.innerHTML = '<p style="color:#c00;">تعذر تحميل اختبارات التخصص.</p>';
     }
 }
 

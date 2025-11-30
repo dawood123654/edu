@@ -3,14 +3,36 @@ window.addEventListener('load', function() {
     loadResults();
 });
 
+let currentUserId = null;
+function userKey(base) {
+    return currentUserId ? `${base}_${currentUserId}` : base;
+}
+
+function resetIfDifferentUser(user) {
+    const lastId = localStorage.getItem('lastQuizUserId');
+    const newId = user?.id ? String(user.id) : null;
+    if (newId && lastId && lastId !== newId) {
+        ['academicFormData', 'academicResults', 'certificateBase64', 'certificateFileName', 'aiRecommendation'].forEach(k => {
+            localStorage.removeItem(`${k}_${lastId}`);
+            localStorage.removeItem(k);
+        });
+    }
+    if (newId) localStorage.setItem('lastQuizUserId', newId);
+}
+
 async function loadResults() {
+    const user = await ApiClient.ensureLoggedIn(false);
+    if (user) {
+        currentUserId = user.id || null;
+        resetIfDifferentUser(user);
+    }
+
     let results = null;
-    const resultsData = localStorage.getItem('academicResults');
+    const resultsData = localStorage.getItem(userKey('academicResults'));
     if (resultsData) {
         results = JSON.parse(resultsData);
     }
 
-    const user = await ApiClient.ensureLoggedIn(false);
     if (user) {
         try {
             const attempt = await ApiClient.request('latest_attempt', { params: { quiz_id: 1 } });
@@ -25,6 +47,11 @@ async function loadResults() {
         } catch (err) {
             console.warn('Falling back to local results', err);
         }
+    }
+
+    const storedAi = localStorage.getItem(userKey('aiRecommendation'));
+    if (storedAi && results) {
+        results.aiRecommendation = storedAi;
     }
 
     if (!results) {
@@ -61,6 +88,8 @@ function displayResults(results) {
     
     // Display detailed analysis
     displayAnalysis(formData, compositeScore, recommendations);
+
+    renderAiRecommendation(results, formData);
 }
 
 function animateScoreRing(score) {
@@ -120,6 +149,71 @@ function displayPerformanceBadge(score) {
         badgeText.textContent = 'جيد';
         badgeIcon.textContent = '✓';
         badge.style.background = 'linear-gradient(135deg, #667eea, #764ba2)';
+    }
+}
+
+function renderAiRecommendation(results, formData) {
+    const card = document.getElementById('aiRecommendationCard');
+    if (!card) return;
+    const textEl = document.getElementById('aiRecommendationText');
+    const noteEl = document.getElementById('aiStatusNote');
+    const retryBtn = document.getElementById('retryAiBtn');
+
+    const recommendation = results.aiRecommendation || localStorage.getItem(userKey('aiRecommendation'));
+    if (recommendation) {
+        textEl.textContent = recommendation;
+        noteEl.textContent = 'تم توليد التوصية اعتماداً على شهادتك ودرجاتك.';
+        card.classList.remove('pending');
+    } else {
+        textEl.textContent = 'لم يتم الحصول على توصية بعد';
+        noteEl.textContent = 'اضغط إعادة التحليل لإرسال الشهادة للنموذج.';
+        card.classList.add('pending');
+    }
+
+    if (retryBtn) {
+        retryBtn.onclick = () => retryAiAnalysis(formData);
+    }
+}
+
+function normalizeBase64(dataUrl) {
+    if (!dataUrl) return '';
+    const commaIndex = dataUrl.indexOf(',');
+    return commaIndex !== -1 ? dataUrl.slice(commaIndex + 1) : dataUrl;
+}
+
+async function retryAiAnalysis(formData) {
+    const storedForm = localStorage.getItem(userKey('academicFormData'));
+    const parsedForm = storedForm ? JSON.parse(storedForm) : {};
+    const certificateBase64 = parsedForm.certificateBase64 || localStorage.getItem(userKey('certificateBase64'));
+    if (!certificateBase64) {
+        showToast('لا يوجد ملف شهادة محفوظ. أعد الرفع من صفحة الاستبيان.', 'error');
+        return;
+    }
+
+    try {
+        const aiResult = await ApiClient.request('ai_suggest_major', {
+            method: 'POST',
+            body: {
+                gat_score: parseFloat(formData.quduratScore) || 0,
+                tahsili_score: parseFloat(formData.tahsiliScore) || 0,
+                gpa: parseFloat(formData.gpa) || 0,
+                certificate_base64: normalizeBase64(certificateBase64),
+                subject_scores: []
+            }
+        });
+        const recommendation = typeof aiResult === 'string'
+            ? aiResult
+            : (aiResult.major || aiResult.recommendation || aiResult.suggestion || null);
+        if (recommendation) {
+            localStorage.setItem(userKey('aiRecommendation'), recommendation);
+            document.getElementById('aiRecommendationText').textContent = recommendation;
+            document.getElementById('aiStatusNote').textContent = 'تم توليد التوصية اعتماداً على شهادتك ودرجاتك.';
+            document.getElementById('aiRecommendationCard').classList.remove('pending');
+            showToast('تم تحديث توصية الذكاء الاصطناعي', 'success');
+        }
+    } catch (err) {
+        console.warn('AI retry failed', err);
+        showToast('تعذر إرسال الشهادة حالياً', 'error');
     }
 }
 

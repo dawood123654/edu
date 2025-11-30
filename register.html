@@ -1,11 +1,13 @@
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>EduPath KSA - إنشاء حساب جديد</title>
     <link rel="stylesheet" href="register-style.css">
 </head>
+
 <body>
     <div class="register-container">
         <!-- Left Side - Form -->
@@ -72,45 +74,7 @@
                     </div>
                 </div>
 
-                <div class="form-group">
-                    <label for="education">المرحلة الدراسية</label>
-                    <div class="input-wrapper">
-                        <select id="education" required>
-                            <option value="">اختر المرحلة...</option>
-                            <option value="middle">المرحلة المتوسطة</option>
-                            <option value="high">المرحلة الثانوية</option>
-                            <option value="university">جامعي</option>
-                            <option value="graduate">خريج</option>
-                        </select>
-                        <span class="input-icon">🎓</span>
-                    </div>
-                </div>
 
-                <div class="form-row">
-                    <div class="form-group">
-                        <label for="gatScore">درجة اختبار القدرات (قدرات)</label>
-                        <div class="input-wrapper">
-                            <input type="number" id="gatScore" min="0" max="100" step="0.1" placeholder="مثال: 85" required>
-                            <span class="input-icon">🧠</span>
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        <label for="tahsiliScore">درجة الاختبار التحصيلي</label>
-                        <div class="input-wrapper">
-                            <input type="number" id="tahsiliScore" min="0" max="100" step="0.1" placeholder="مثال: 88" required>
-                            <span class="input-icon">📝</span>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="form-group">
-                    <label for="certificateFile">تحميل صورة شهادة الثانوية (PNG/JPG)</label>
-                    <div class="input-wrapper">
-                        <input type="file" id="certificateFile" accept="image/*" required>
-                        <span class="input-icon">📄</span>
-                    </div>
-                    <small class="password-hint">سيتم استخدام الصورة مع الدرجات لإرسال توصية تخصص عبر الذكاء الاصطناعي</small>
-                </div>
 
                 <div class="form-group">
                     <label for="password">كلمة المرور</label>
@@ -146,13 +110,10 @@
                 </button>
             </form>
 
-            <div class="ai-box" id="aiResultBox" style="display:none;">
-                <h3>توصية التخصص (مدعومة بالذكاء الاصطناعي)</h3>
-                <p id="aiResultText"></p>
-            </div>
+
 
             <div class="login-link">
-                لديك حساب بالفعل؟ 
+                لديك حساب بالفعل؟
                 <a href="login.html">تسجيل الدخول</a>
             </div>
         </div>
@@ -201,4 +162,5 @@
     <script src="api-client.js"></script>
     <script src="register-script.js"></script>
 </body>
+
 </html>

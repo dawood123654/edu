@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EduPath KSA - اختبارات التخصصات</title>
+    <link rel="stylesheet" href="major-quiz-style.css">
+</head>
+<body>
+    <header class="mq-header">
+        <div class="mq-header-content">
+            <div class="mq-logo">📚 EduPath KSA</div>
+            <div class="mq-actions">
+                <select id="quizSelector" aria-label="اختر الاختبار"></select>
+                <button class="btn-outline" onclick="location.href='dashboard.html'">لوحة التحكم</button>
+            </div>
+        </div>
+    </header>
+
+    <main class="mq-main">
+        <section class="mq-quiz-card">
+            <div class="mq-quiz-header">
+                <div>
+                    <p class="mq-label">اختبار التخصص</p>
+                    <h1 id="quizTitle">اختبار</h1>
+                    <p id="quizDescription" class="mq-desc">جارٍ تحميل الوصف...</p>
+                </div>
+                <div class="mq-progress">
+                    <div class="mq-progress-text">
+                        <span id="progressCount">0/0</span>
+                        <span>أسئلة مكتملة</span>
+                    </div>
+                    <div class="mq-progress-bar">
+                        <div id="progressFill"></div>
+                    </div>
+                </div>
+            </div>
+
+            <form id="quizForm" class="mq-form">
+                <div id="questionsContainer" class="mq-questions"></div>
+                <div class="mq-actions-row">
+                    <button type="button" class="btn-outline" id="cancelBtn">إلغاء</button>
+                    <button type="submit" class="btn-primary" id="submitBtn">حفظ المحاولة</button>
+                </div>
+            </form>
+        </section>
+
+        <aside class="mq-sidebar">
+            <div class="mq-side-card">
+                <div class="side-icon">💡</div>
+                <h3>كيف يعمل؟</h3>
+                <ul>
+                    <li>اختر اختبار التخصص من القائمة</li>
+                    <li>أجب عن الأسئلة المطلوبة</li>
+                    <li>سيتم حفظ محاولتك وربطها بحسابك</li>
+                </ul>
+            </div>
+            <div class="mq-side-card alt">
+                <div class="side-icon">🎯</div>
+                <h3>نصائح سريعة</h3>
+                <ul>
+                    <li>أجب بصدق لتحصل على توصيات أدق</li>
+                    <li>يمكنك العودة وتغيير إجاباتك لاحقاً</li>
+                    <li>الأسئلة الإجبارية مميزة بنجمة</li>
+                </ul>
+            </div>
+        </aside>
+    </main>
+
+    <script src="api-client.js"></script>
+    <script src="major-quiz-script.js"></script>
+</body>
+</html>

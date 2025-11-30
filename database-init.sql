@@ -71,6 +71,7 @@ CREATE TABLE quiz_attempts (
   id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
   quiz_id INT UNSIGNED NOT NULL,
   user_id INT UNSIGNED NOT NULL,
+  ai_recommendation VARCHAR(255) NULL,
   composite_score DECIMAL(5,2) NULL,
   duration_seconds INT NULL,
   answers_json JSON,
